@@ -9,14 +9,12 @@ const LOCALES = ["af", "ar", "as", "ast", "az", "be", "bg", "bn_BD", "bn_IN",
 "hr", "hsb", "ht", "hu", "hy_AM", "id", "it", "ja", "kk", "km", "kn", "ko",
 "ku", "lij", "lt", "lv", "mk", "ml", "mn", "ms", "my", "nb_NO", "ne_NP", "nl",
 "or", "pa_IN", "pl", "pt", "pt_BR", "pt_PT", "ro", "ru", "si", "sk", "sl",
-"son", "sq", "sr", "sv_SE", "ta", "te", "templates", "th", "tr", "uk", "ur",
-"vi", "xh", "zh_CN", "zh_TW", "zu"];
+"son", "sq", "sr", "sv_SE", "ta", "te", "th", "tr", "uk", "ur", "vi", "xh",
+"zh_CN", "zh_TW", "zu"];
 
 function processFile(file, processor) {
-  fs.readFileSync(file, "utf8").trim().replace(/\\\n/g, "\0").split(/\n/).map(function(line) {
-    return line.replace(/\0/g, "\\\n");
-  }).forEach(function(line) {
-    var property = line.match(/^([^#]\S*)=(.*)$/);
+  fs.readFileSync(file, "utf8").trim().replace(/\s*\\\n\s*/g, " ").split(/\n/).forEach(function(line) {
+    var property = line.match(/^([^#]\S*)\s*=\s*(.*)/);
     processor(line, property && property.slice(1));
   });
 }
@@ -39,8 +37,8 @@ function processLocale(locale) {
         var existing = translated[property[0]];
         if (existing) {
           used[property[0]] = true;
+          out[file].push(property[0] + "=" + (existing || property[1]));
         }
-        out[file].push(property[0] + "=" + (existing || property[1]));
       }
       else {
         out[file].push(line);
